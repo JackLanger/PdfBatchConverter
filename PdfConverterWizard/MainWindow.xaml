@@ -1,0 +1,421 @@
+﻿<Window
+    x:Class="PdfConverterWizard.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:contr="clr-namespace:PdfConverterWizard.controller"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PdfConverterWizard"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utility="clr-namespace:PdfConverterWizard.utils"
+    Title="MainWindow"
+    Width="800"
+    Height="600"
+    mc:Ignorable="d">
+    <Window.DataContext>
+        <contr:ConvertController />
+    </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="RoundCorner" TargetType="{x:Type Button}">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="grid">
+                            <Border
+                                x:Name="border"
+                                Margin="25,5"
+                                Padding="5"
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <Border.Background>
+                                    <SolidColorBrush Color="LightGray" />
+                                </Border.Background>
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    TextElement.FontWeight="DemiBold" />
+                            </Border>
+
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="LightGray" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1ce3b8" />
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="grid" Property="Opacity" Value="0.25" />
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BaseList" TargetType="{x:Type ListBox}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="Height" Value="300" />
+            <Setter Property="Width" Value="250" />
+            <Setter Property="FontFamily" Value="Charter, San Serif" />
+        </Style>
+        <Style x:Key="Headline" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="25" />
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </Window.Resources>
+    <StackPanel Orientation="Horizontal">
+        <StackPanel
+            Margin="15"
+            HorizontalAlignment="Center"
+            Orientation="Vertical">
+            <Label Style="{DynamicResource Headline}">Batch File Converter</Label>
+            <Button
+                x:Name="btnConvert"
+                Command="{Binding ConvertCommand}"
+                Content="{Binding ActionString}"
+                IsEnabled="False">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                        <Setter Property="Padding" Value="1" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Grid x:Name="grid">
+                                        <Border
+                                            x:Name="border"
+                                            Margin="25,5"
+                                            Padding="5"
+                                            BorderBrush="#09b085"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="#1ce3b8" />
+                                            </Border.Background>
+                                            <ContentPresenter
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                TextElement.FontWeight="DemiBold"
+                                                TextElement.Foreground="Black" />
+                                        </Border>
+
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="border" Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="LightGray" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#09b085" />
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="Cursor" Value="Hand" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="grid" Property="Opacity" Value="0.25" />
+                                        </Trigger>
+
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <ListBox
+                x:Name="lbPaths"
+                MinWidth="350"
+                utility:FileDragDropHelper.FileDragDropTarget="{Binding}"
+                utility:FileDragDropHelper.IsFileDragDropEnabled="True"
+                AllowDrop="True"
+                ItemsSource="{Binding FilePaths}"
+                ScrollViewer.CanContentScroll="True"
+                SelectionChanged="lbPaths_SelectionChanged"
+                SelectionMode="Extended"
+                Style="{DynamicResource BaseList}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Image Source="{Binding FileIcon}" />
+                            <TextBlock
+                                Margin="15,0"
+                                FontSize="15"
+                                FontWeight="DemiBold"
+                                Text="{Binding FileName}" />
+                            <TextBlock Margin="5,0" Text="{Binding FullPath}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    Command="{Binding SelectFileCommand}"
+                    Content="Select Files"
+                    Style="{DynamicResource RoundCorner}" />
+                <Button
+                    x:Name="btnRemove"
+                    Command="{Binding RemoveCommand}"
+                    CommandParameter="{Binding ElementName=lbPaths, Path=SelectedItems}"
+                    Content="Remove"
+                    IsEnabled="False">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="1" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid x:Name="grid">
+                                            <Border
+                                                x:Name="border"
+                                                Margin="25,5"
+                                                Padding="5"
+                                                BorderBrush="DarkRed"
+                                                BorderThickness="1"
+                                                CornerRadius="8">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#e41b43" />
+                                                </Border.Background>
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    TextElement.FontWeight="DemiBold"
+                                                    TextElement.Foreground="White" />
+                                            </Border>
+
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="LightGray" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#dd6122" />
+                                                <Setter Property="Cursor" Value="Hand" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="grid" Property="Opacity" Value="0.25" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button
+                    x:Name="btnOpen"
+                    Command="{Binding OpenFileCommand}"
+                    CommandParameter="{Binding ElementName=lbPaths, Path=SelectedItem}"
+                    Content="Open"
+                    IsEnabled="False">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="1" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid x:Name="grid">
+                                            <Border
+                                                x:Name="border"
+                                                Margin="25,5"
+                                                Padding="5"
+                                                BorderBrush="DarkBlue"
+                                                BorderThickness="1"
+                                                CornerRadius="8">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#2289dd" />
+                                                </Border.Background>
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    TextElement.FontWeight="DemiBold"
+                                                    TextElement.Foreground="White" />
+                                            </Border>
+
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="LightGray" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#55bcff" />
+                                                <Setter Property="Cursor" Value="Hand" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="grid" Property="Opacity" Value="0.25" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+            <ProgressBar
+                Height="8"
+                Margin="15"
+                Padding="15"
+                Value="{Binding Progress}" />
+        </StackPanel>
+        <DockPanel Margin="25">
+            <Line
+                DockPanel.Dock="Left"
+                Stroke="LightGray"
+                X1="0"
+                X2="0"
+                Y1="25"
+                Y2="750" />
+            <Label
+                Margin="10"
+                DockPanel.Dock="Top"
+                FontSize="15"
+                Foreground="LightGray">
+                Log
+            </Label>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <Button Command="{Binding ClearLogCommand}" Content="Clear">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="1" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid x:Name="grid">
+                                            <Border
+                                                x:Name="border"
+                                                Margin="25,5"
+                                                Padding="5"
+                                                BorderBrush="DarkBlue"
+                                                BorderThickness="1"
+                                                CornerRadius="8">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#2289dd" />
+                                                </Border.Background>
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    TextElement.FontWeight="DemiBold"
+                                                    TextElement.Foreground="White" />
+                                            </Border>
+
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="LightGray" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#55bcff" />
+                                                <Setter Property="Cursor" Value="Hand" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="grid" Property="Opacity" Value="0.25" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Command="{Binding SaveLogCommand}" Content="Save Log">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="1" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid x:Name="grid">
+                                            <Border
+                                                x:Name="border"
+                                                Margin="25,5"
+                                                Padding="5"
+                                                BorderBrush="DarkBlue"
+                                                BorderThickness="1"
+                                                CornerRadius="8">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#2289dd" />
+                                                </Border.Background>
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    TextElement.FontWeight="DemiBold"
+                                                    TextElement.Foreground="White" />
+                                            </Border>
+
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="LightGray" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#55bcff" />
+                                                <Setter Property="Cursor" Value="Hand" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="grid" Property="Opacity" Value="0.25" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+            <ListBox
+                x:Name="lbErrorLogs"
+                Width="400"
+                Height="300"
+                Margin="15"
+                BorderThickness="0"
+                DockPanel.Dock="Bottom"
+                FontFamily="Charter,Sans Serif"
+                FontSize="10"
+                Foreground="Red"
+                ItemsSource="{Binding ErrorLogs}"
+                ScrollViewer.CanContentScroll="True"
+                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        </DockPanel>
+    </StackPanel>
+</Window>
