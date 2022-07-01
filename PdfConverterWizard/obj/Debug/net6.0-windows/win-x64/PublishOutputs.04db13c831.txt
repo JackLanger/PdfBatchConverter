@@ -1,0 +1,8 @@
+E:\MyProjects\c#\deployments\pdfconverter\PdfConverterWizard.exe
+E:\MyProjects\c#\deployments\pdfconverter\PdfConverterWizard.dll
+E:\MyProjects\c#\deployments\pdfconverter\PdfConverterWizard.deps.json
+E:\MyProjects\c#\deployments\pdfconverter\PdfConverterWizard.runtimeconfig.json
+E:\MyProjects\c#\deployments\pdfconverter\PdfConverterWizard.pdb
+E:\MyProjects\c#\deployments\pdfconverter\JetBrains.Annotations.dll
+E:\MyProjects\c#\deployments\pdfconverter\SautinSoft.Document.dll
+E:\MyProjects\c#\deployments\pdfconverter\System.Xml.XPath.XmlDocument.dll

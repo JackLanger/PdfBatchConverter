@@ -1,0 +1,8 @@
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\PdfConverterWizard.exe
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\PdfConverterWizard.dll
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\PdfConverterWizard.deps.json
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\PdfConverterWizard.runtimeconfig.json
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\PdfConverterWizard.pdb
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\JetBrains.Annotations.dll
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\SautinSoft.Document.dll
+E:\MyProjects\c#\FileToPdfConverterWizard\PdfConverterWizard\bin\Debug\net6.0-windows\publish\System.Xml.XPath.XmlDocument.dll
