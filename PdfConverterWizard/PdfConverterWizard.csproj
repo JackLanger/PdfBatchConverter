@@ -13,4 +13,8 @@
       <PackageReference Include="sautinsoft.document" Version="5.5.4.14" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="controls" />
+    </ItemGroup>
+
 </Project>
