@@ -1,3 +1,11 @@
+using JetBrains.Annotations;
+using Microsoft.Win32;
+using PdfBatchConverterWizard.models;
+using PdfBatchConverterWizzard.controls;
+using PdfConverterWizard.controls;
+using PdfConverterWizard.exceptions;
+using PdfConverterWizard.utils;
+using SautinSoft.Document;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,19 +17,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using JetBrains.Annotations;
-using Microsoft.Win32;
-using PdfBatchConverterWizard.models;
-using PdfBatchConverterWizzard.controls;
-using PdfConverterWizard.controls;
-using PdfConverterWizard.exceptions;
-using PdfConverterWizard.utils;
-using SautinSoft.Document;
 
 namespace PdfConverterWizard.controller;
 
 public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
 {
+    private static string TempFolderPath = $@"c:\users\{Environment.UserName}\documents\pdfBatchCreatorWizzard\{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}\";
     private string LogFilePath { get; set; } = string.Empty;
     /// <summary>
     /// List of file paths from selection.
@@ -142,13 +143,14 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
     /// <summary>
     /// Command to start conversion.
     /// </summary>
-    public ICommand ConvertCommand => _convertCommand ??= new RelayCommand( () => ConvertAllFiles());
+    public ICommand ConvertCommand => _convertCommand ??= new RelayCommand(() => ConvertAllFiles());
 
     /// <summary>
     /// Converts the paths provided.
     /// </summary>
     private async void ConvertAllFiles()
     {
+        CreatePathIfNotExist();
         bool finished = false;
         List<Task> tasks = new();
         foreach (var filePath in _filePaths)
@@ -165,27 +167,33 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
                 ErrorLogs.Add(ex.Message);
             }
         }
-        
+        var percentage = 100.0 * Progress / tasks.Count;
         while (!finished)
         {
-            var progress = 0;
             foreach (var tsk in tasks)
             {
-                var task = (Task<FileModel>) tsk;
+                var task = (Task<FileModel>)tsk;
                 var file = await task;
                 finished = task.IsCompleted || task.IsCanceled;
                 if (finished)
                 {
-                    progress++;
+                    FilePaths.Remove(file);
                 }
-                FilePaths.Remove(file);
             }
-            Progress = 100.0 * progress / tasks.Count;
-            ActionString = $"Converting files to PDF. Progress: {Progress}%";
+
+            ActionString = $"Converting files to PDF. Progress: {percentage}%";
         }
 
-        ActionString = $"Converting files to PDF. Progress: {Progress}%";
+        ActionString = $"Converting files to PDF. Progress: {percentage}%";
+        Process.Start(@"C:\Windows\explorer.exe", TempFolderPath);
         FilePaths.Clear();
+    }
+
+    private void CreatePathIfNotExist()
+    {
+        string pathtofiles = @$"{TempFolderPath}";
+        Directory.CreateDirectory(TempFolderPath);
+        Directory.CreateDirectory(pathtofiles);
     }
 
     /// <summary>
@@ -202,12 +210,19 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
             var fileName = file.FullPath;
             var nameArr = fileName.Split('.');
             nameArr[1] = "pdf";
-            if (file.Extension is not FileExtension.invalid)
-                DocumentCore.Load(file.FullPath).Save($"{nameArr[0]}.{nameArr[1]}");
 
+            string[] name = file.FileName.Split(".");
+            string pdfPath = $@"{TempFolderPath}\{name[0]}.pdf";
+
+            if (file.Extension is not FileExtension.invalid)
+            {
+                DocumentCore.Load(file.FullPath).Save($"{pdfPath}");
+            }
+            Progress++;
             return file;
         });
     }
+
 
     /// <summary>
     /// Command to remove unwanted files from the filepaths list. 
@@ -260,6 +275,7 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
             }
         }
         ActionString = "Convert";
+        Progress = 0;
     }
 
     private bool canConvert(FileModel fileMod)
