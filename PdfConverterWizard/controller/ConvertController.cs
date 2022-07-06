@@ -37,7 +37,7 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
     /// <summary>
     /// Value for the progress bar.
     /// </summary>
-    private double _progress;
+    private double _progress = 0.0;
 
     /// <summary>
     /// Public value for progress bar.
@@ -151,40 +151,19 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
     private async void ConvertAllFiles()
     {
         CreatePathIfNotExist();
-        bool finished = false;
-        List<Task> tasks = new();
         foreach (var filePath in _filePaths)
         {
             try
             {
-
-                Task task = ConvertAsync(filePath);
-                tasks.Add(task);
-
+                await ConvertAsync(filePath);
             }
             catch (Exception ex)
             {
                 ErrorLogs.Add(ex.Message);
             }
         }
-        var percentage = 100.0 * Progress / tasks.Count;
-        while (!finished)
-        {
-            foreach (var tsk in tasks)
-            {
-                var task = (Task<FileModel>)tsk;
-                var file = await task;
-                finished = task.IsCompleted || task.IsCanceled;
-                if (finished)
-                {
-                    FilePaths.Remove(file);
-                }
-            }
 
-            ActionString = $"Converting files to PDF. Progress: {percentage}%";
-        }
-
-        ActionString = $"Converting files to PDF. Progress: {percentage}%";
+        ActionString = $"Converting files to PDF. Progress: {Progress}%";
         Process.Start(@"C:\Windows\explorer.exe", TempFolderPath);
         FilePaths.Clear();
     }
@@ -201,7 +180,7 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
     /// </summary>
     /// <param name="file">the file to convert</param>
     /// <returns>a task converting the file to pdf</returns>
-    private async Task<FileModel> ConvertAsync(FileModel file)
+    private async Task<bool> ConvertAsync(FileModel file)
     {
         return await Task.Run(() =>
         {
@@ -213,13 +192,14 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
 
             string[] name = file.FileName.Split(".");
             string pdfPath = $@"{TempFolderPath}\{name[0]}.pdf";
+            Progress += 100 / FilePaths.Count();
 
             if (file.Extension is not FileExtension.invalid)
             {
                 DocumentCore.Load(file.FullPath).Save($"{pdfPath}");
             }
-            Progress++;
-            return file;
+
+            return true;
         });
     }
 
