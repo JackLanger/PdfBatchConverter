@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\App.xaml
-11407045341
+2911690177
 
-11661138315
+13-240136743
 198-1500861762
-MainWindow.xaml;
+controlls\SwitchButton.xaml;MainWindow.xaml;
 
 False
 

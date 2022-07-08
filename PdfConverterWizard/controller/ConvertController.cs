@@ -39,6 +39,15 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
     /// </summary>
     private double _progress = 0.0;
 
+    private bool _isMultifile;
+
+    public bool IsMultifile
+    {
+        get { return _isMultifile; }
+        set { _isMultifile = value; }
+    }
+
+
     /// <summary>
     /// Public value for progress bar.
     /// </summary>
@@ -150,22 +159,51 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
     /// </summary>
     private async void ConvertAllFiles()
     {
+        if (FilePaths.Count is 0)
+            return;
         CreatePathIfNotExist();
-        foreach (var filePath in _filePaths)
+        if (IsMultifile)
+        {
+            foreach (var filePath in _filePaths)
+            {
+                try
+                {
+                    await ConvertAsync(filePath);
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogs.Add(ex.Message);
+                }
+            }
+        }
+        else
         {
             try
             {
-                await ConvertAsync(filePath);
+                await ConvertAsyncSinglefile(FilePaths);
             }
             catch (Exception ex)
             {
                 ErrorLogs.Add(ex.Message);
             }
         }
-
         ActionString = $"Converting files to PDF. Progress: {Progress}%";
         Process.Start(@"C:\Windows\explorer.exe", TempFolderPath);
         FilePaths.Clear();
+    }
+
+    private Task ConvertAsyncSinglefile(ObservableCollection<FileModel> filePaths)
+    {
+        return Task.Run(() =>
+        {
+            string pdfPath = $@"{TempFolderPath}\{filePaths.First().FileName.Split('.')[0]}.pdf";
+            var docbuilder = new DocumentBuilder();
+            foreach (var filePath in filePaths)
+            {
+                docbuilder.InsertDocument(DocumentCore.Load(filePath.FullPath));
+            }
+            docbuilder.Document.Save(pdfPath);
+        });
     }
 
     private void CreatePathIfNotExist()
@@ -290,6 +328,9 @@ public class ConvertController : INotifyPropertyChanged, IFileDragDropTarget
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+
+    public delegate void Converting();
+    public event Converting OnConverting;
     /// <summary>
     /// File drop method this method is beeing fired on a file drop on the Files list.
     /// </summary>

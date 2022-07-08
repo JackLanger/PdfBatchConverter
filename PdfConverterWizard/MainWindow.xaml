@@ -6,6 +6,7 @@
     xmlns:controlls="clr-namespace:PdfConverterWizard.controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PdfConverterWizard"
+    xmlns:converter="clr-namespace:PdfConverterWizard.converter"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utility="clr-namespace:PdfConverterWizard.utils"
     Title="MainWindow"
@@ -16,6 +17,7 @@
         <contr:ConvertController />
     </Window.DataContext>
     <Window.Resources>
+        <converter:EnableConvertButtonConverter x:Key="ConvertEnableConverter"/>
         <Style x:Key="RoundCorner" TargetType="{x:Type Button}">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -63,7 +65,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style x:Key="BaseList" TargetType="{x:Type ListBox}">
             <Setter Property="Margin" Value="5" />
             <Setter Property="Padding" Value="15" />
@@ -84,11 +85,17 @@
             HorizontalAlignment="Center"
             Orientation="Vertical">
             <Label Style="{DynamicResource Headline}">Batch File Converter</Label>
-            <Button
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Button
                 x:Name="btnConvert"
+                IsEnabled="False"
                 Command="{Binding ConvertCommand}"
                 Content="{Binding ActionString}"
-                IsEnabled="False">
+                >
                 <Button.Resources>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -140,6 +147,11 @@
                     </Style>
                 </Button.Resources>
             </Button>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="2">
+                    <Label>Multifile</Label>   
+                    <CheckBox IsChecked="{Binding IsMultifile}" VerticalAlignment="Center" HorizontalAlignment="Center"  Width="25" Grid.Column="2"></CheckBox>
+                </StackPanel>
+            </Grid>
             <ListBox
                 x:Name="lbPaths"
                 MinWidth="350"

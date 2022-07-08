@@ -50,3 +50,5 @@ C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\obj\Deb
 C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\obj\Debug\net6.0-windows\ref\PdfConverterWizard.dll
 C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\obj\Debug\net6.0-windows\PdfConverterWizard.pdb
 C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\obj\Debug\net6.0-windows\PdfConverterWizard.genruntimeconfig.cache
+C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\obj\Debug\net6.0-windows\controlls\SwitchButton.g.cs
+C:\Users\langer\Desktop\Projects\C#\PdfBatchConverter\PdfConverterWizard\obj\Debug\net6.0-windows\controlls\SwitchButton.baml
